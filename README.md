@@ -1,6 +1,8 @@
 # CS410-17
 being the lecture materials and exercises for the 2017/18 session of CS410 Advanced Functional Programming at the University of Strathclyde
 
+One minute papers and lecture videos will appear on our [Marx site](https://personal.cis.strath.ac.uk/conor.mcbride/Marx/?page=CS410).
+
 ## Installation instructions
 0. Check if you're using bash
 $ echo $0
