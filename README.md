@@ -17,3 +17,7 @@ $ echo $0
 7. $ agda-mode setup
 8. $ emacs test.agda -- You should see an Agda menu and (Agda) in the mode line.
 9. $ git clone https://github.com/pigworker/CS410-17
+
+## Lecture videos on YouTube
+
+1. [Tuesday 19 September](https://www.youtube.com/watch?v=O4oczQry9Jw)
