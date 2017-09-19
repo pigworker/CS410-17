@@ -1,0 +1,46 @@
+------------------------
+Agda / Emacs Cheat Sheet
+------------------------
+
+This document will give you an overview of commonly used Agda, as well as Emacs, commands.
+
+C-     = Ctrl
+M-     = Alt/Esc
+buffer = file
+hole   = place where an expression is expected.
+
+Emacs:
+------
+C-x C-f   : find a file to load
+C-x C-s   : Save buffer
+C-x C-c   : Exit emacs
+
+C-s       : Search forward for some text
+C-r       : Search backward for some text
+C-/       : Undo
+C-a       : Jump to start of the line
+C-e       : Jump to end of the line
+M-<       : Jump to top of the buffer
+M->       : Jump to end of the buffer
+M-}       : Jump forwards a paragraph (blank line after block of text)
+M-{       : Jump backwards a paragraph
+
+Agda:
+-----
+C-c C-l   : Load (type check) the current buffer.
+C-c C-f   : Jump (forward) to active hole
+C-c C-b   : Jump (backward) to active hole
+C-c C-,   : Show goal type, and context of current hole
+C-c C-.   : Show goal type, context, and type of expression in the hole.
+C-c C-spc : Fill the hole with the given expression
+C-c C-r   : Refine the hole
+C-c C-a   : Search for a proof and fill it in the hole if there is at least 1.
+            -l       : list the possible proofs
+            -s 10 -l : skip the first 10 proofs
+C-c C-c   : Case split the given variable(s) into its possible constructors
+C-c C-n   : Evaluate an expression
+C-c C-d   : Infer a type for an expression
+
+C-c C-x C-d : Kill Agda - useful if agda gets a bit fussy
+              (Can use C-c C-l to start Agda again when needed)
+C-c C-x C-r : Kill and restart Agda
