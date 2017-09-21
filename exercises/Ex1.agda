@@ -118,7 +118,7 @@ vMapCpFact heq xs = {!!}
 vMap+VFact : {X Y : Set}(f : X -> Y) ->
              {m n : Nat}(xs : Vec X m)(xs' : Vec X n) ->
              vMap f (xs +V xs') == (vMap f xs +V vMap f xs')
-vMap+VFact f xs xs' = ?
+vMap+VFact f xs xs' = {!!}
 
 --??--------------------------------------------------------------------------
 
@@ -134,10 +134,10 @@ vMap+VFact f xs xs' = ?
 
 -- HINT: you will need to override the default invisibility of n to do this.
 vPure : {X : Set} -> X -> {n : Nat} -> Vec X n
-vPure x {n} = ?
+vPure x {n} = {!!}
 
 _$V_ : {X Y : Set}{n : Nat} -> Vec (X -> Y) n -> Vec X n -> Vec Y n
-fs $V xs = ?
+fs $V xs = {!!}
 infixl 3 _$V_  -- "Application associates to the left,
                --  rather as we all did in the sixties." (Roger Hindley)
 
@@ -145,11 +145,11 @@ infixl 3 _$V_  -- "Application associates to the left,
 
 -- implement vMap again, but as a one-liner
 vec : {X Y : Set} -> (X -> Y) -> {n : Nat} -> Vec X n -> Vec Y n
-vec f xs = ?
+vec f xs = {!!}
 
 -- implement the operation which pairs up corresponding elements
 vZip : {X Y : Set}{n : Nat} -> Vec X n -> Vec Y n -> Vec (X * Y) n
-vZip xs ys = ?
+vZip xs ys = {!!}
 
 --??--------------------------------------------------------------------------
 
@@ -167,21 +167,213 @@ vZip xs ys = ?
 
 vIdentity : {X : Set}{f : X -> X}(feq : (x : X) -> f x == x) ->
             {n : Nat}(xs : Vec X n) -> (vPure f $V xs) == xs
-vIdentity feq xs = ?
+vIdentity feq xs = {!!}
 
 vHomomorphism : {X Y : Set}(f : X -> Y)(x : X) ->
                 {n : Nat} -> (vPure f $V vPure x) == vPure (f x) {n}
-vHomomorphism f x {n} = ?
+vHomomorphism f x {n} = {!!}
 
 vInterchange : {X Y : Set}{n : Nat}(fs : Vec (X -> Y) n)(x : X) ->
                (fs $V vPure x) == (vPure (_$ x) $V fs)
-vInterchange fs x = ?
+vInterchange fs x = {!!}
 
 vComposition : {X Y Z : Set}{n : Nat}
                (fs : Vec (Y -> Z) n)(gs : Vec (X -> Y) n)(xs : Vec X n) ->
                (vPure _<<_ $V fs $V gs $V xs) == (fs $V (gs $V xs))
-vComposition fs gs xs = ?
+vComposition fs gs xs = {!!}
 
 --??--------------------------------------------------------------------------
 
 
+------------------------------------------------------------------------------
+-- Order-Preserving Embeddings (also known in the business as "thinnings")
+------------------------------------------------------------------------------
+
+-- What have these to do with Pascal's Triangle?
+
+data _<=_ : Nat -> Nat -> Set where
+  oz :                          zero  <= zero
+  os : {n m : Nat} -> n <= m -> suc n <= suc m
+  o' : {n m : Nat} -> n <= m ->     n <= suc m
+
+-- Find all the values in each of the following <= types.
+-- This is a good opportunity to learn to use C-c C-a with the -l option
+--   (a.k.a. "google the type" without "I feel lucky")
+-- The -s n option also helps.
+
+--??--1.7---------------------------------------------------------------------
+
+all0<=4 : Vec (0 <= 4) {!!}
+all0<=4 = {!!}
+
+all1<=4 : Vec (1 <= 4) {!!}
+all1<=4 = {!!}
+
+all2<=4 : Vec (2 <= 4) {!!}
+all2<=4 = {!!}
+       
+all3<=4 : Vec (3 <= 4) {!!}
+all3<=4 = {!!}
+
+all4<=4 : Vec (4 <= 4) {!!}
+all4<=4 = {!!}
+
+-- Prove the following. A massive case analysis "rant" is fine.
+
+no5<=4 : 5 <= 4 -> Zero
+no5<=4 th = {!!}
+
+--??--------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------
+-- Order-Preserving Embeddings Select From Vectors
+------------------------------------------------------------------------------
+
+-- Use n <= m to encode the choice of n elements from an m-Vector.
+-- The os constructor tells you to take the next element of the vector;
+-- the o' constructor tells you to omit the next element of the vector.
+
+--??--1.8---------------------------------------------------------------------
+
+_<?=_ : {X : Set}{n m : Nat} -> n <= m -> Vec X m
+                     -> Vec X n
+th <?= xs = {!!}
+
+-- it shouldn't matter whether you map then select or select then map
+
+vMap<?=Fact : {X Y : Set}(f : X -> Y)
+              {n m : Nat}(th : n <= m)(xs : Vec X m) ->
+              vMap f (th <?= xs) == (th <?= vMap f xs)
+vMap<?=Fact f th xs = {!!}
+
+--??--------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------
+-- Our Favourite Thinnings
+------------------------------------------------------------------------------
+
+-- Construct the identity thinning and the empty thinning.
+
+--??--1.9---------------------------------------------------------------------
+
+oi : {n : Nat} -> n <= n
+oi {n}  = {!!}
+
+oe : {n : Nat} -> 0 <= n
+oe {n}  = {!!}
+
+--??--------------------------------------------------------------------------
+
+
+-- Show that all empty thinnings are equal to yours.
+
+--??--1.10--------------------------------------------------------------------
+
+oeUnique : {n : Nat}(th : 0 <= n) -> th == oe
+oeUnique i = {!!}
+
+--??--------------------------------------------------------------------------
+
+
+-- Show that there are no thinnings of form big <= small  (TRICKY)
+-- Then show that all the identity thinnings are equal to yours.
+-- Note that you can try the second even if you haven't finished the first.
+-- HINT: you WILL need to expose the invisible numbers.
+-- HINT: check CS410-Prelude for a reminder of >=
+
+--??--1.11--------------------------------------------------------------------
+
+oTooBig : {n m : Nat} -> n >= m -> suc n <= m -> Zero
+oTooBig {n} {m} n>=m th = {!!}
+
+oiUnique : {n : Nat}(th : n <= n) -> th == oi
+oiUnique th = {!!}
+
+--??--------------------------------------------------------------------------
+
+
+-- Show that the identity thinning selects the whole vector
+
+--??--1.12--------------------------------------------------------------------
+
+id-<?= : {X : Set}{n : Nat}(xs : Vec X n) -> (oi <?= xs) == xs
+id-<?= xs = {!!}
+
+--??--------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------
+-- Composition of Thinnings
+------------------------------------------------------------------------------
+
+-- Define the composition of thinnings and show that selecting by a
+-- composite thinning is like selecting then selecting again.
+-- A small bonus applies to minimizing the length of the proof.
+-- To collect the bonus, you will need to think carefully about
+-- how to make the composition as *lazy* as possible.
+
+--??--1.13--------------------------------------------------------------------
+
+_o>>_ : {p n m : Nat} -> p <= n -> n <= m -> p <= m
+th o>> th' = {!!}
+
+cp-<?= : {p n m : Nat}(th : p <= n)(th' : n <= m) ->
+         {X : Set}(xs : Vec X m) ->
+         ((th o>> th') <?= xs) == (th <?= (th' <?= xs))
+cp-<?= th th' xs = {!!}
+
+--??--------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------
+-- Thinning Dominoes
+------------------------------------------------------------------------------
+
+--??--1.14--------------------------------------------------------------------
+
+idThen-o>> : {n m : Nat}(th : n <= m) -> (oi o>> th) == th
+idThen-o>> th = {!!}
+
+idAfter-o>> : {n m : Nat}(th : n <= m) -> (th o>> oi) == th
+idAfter-o>> th = {!!}
+
+assoc-o>> : {q p n m : Nat}(th0 : q <= p)(th1 : p <= n)(th2 : n <= m) ->
+            ((th0 o>> th1) o>> th2) == (th0 o>> (th1 o>> th2))
+assoc-o>> th0 th1 th2 = {!!}
+
+--??--------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------
+-- Vectors as Arrays
+------------------------------------------------------------------------------
+
+-- We can use 1 <= n as the type of bounded indices into a vector and do
+-- a kind of "array projection". First we select a 1-element vector from
+-- the n-element vector, then we take its head to get the element out.
+
+vProject : {n : Nat}{X : Set} -> Vec X n -> 1 <= n -> X
+vProject xs i = vHead (i <?= xs)
+
+-- Your (TRICKY) mission is to reverse the process, tabulating a function
+-- from indices as a vector. Then show that these operations are inverses.
+
+--??--1.15--------------------------------------------------------------------
+
+-- HINT: composition of functions
+vTabulate : {n : Nat}{X : Set} -> (1 <= n -> X) -> Vec X n
+vTabulate {n} f = {!!}
+
+-- This should be easy if vTabulate is correct.
+vTabulateProjections : {n : Nat}{X : Set}(xs : Vec X n) ->
+                       vTabulate (vProject xs) == xs
+vTabulateProjections xs = {!!}
+
+-- HINT: oeUnique
+vProjectFromTable : {n : Nat}{X : Set}(f : 1 <= n -> X)(i : 1 <= n) ->
+                    vProject (vTabulate f) i == f i
+vProjectFromTable f i = {!!}
+
+--??--------------------------------------------------------------------------
