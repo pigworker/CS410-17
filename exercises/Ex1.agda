@@ -60,6 +60,7 @@ vHeadTailFact xs = {!!}
 
 _+V_ : {X : Set}{m n : Nat} -> Vec X m -> Vec X n -> Vec X (m +N n)
 xs +V ys = {!!}
+infixr 4 _+V_
 
 vChop : {X : Set}(m : Nat){n : Nat} -> Vec X (m +N n) -> Vec X m * Vec X n
 vChop m xs = {!!}
