@@ -21,3 +21,4 @@ $ echo $0
 ## Lecture videos on YouTube
 
 1. [Tuesday 19 September](https://www.youtube.com/watch?v=O4oczQry9Jw)
+2. [Friday 22 September](https://www.youtube.com/watch?v=qcVZxQTouDk)
