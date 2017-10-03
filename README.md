@@ -24,3 +24,4 @@ $ echo $0
 2. [Friday 22 September](https://www.youtube.com/watch?v=qcVZxQTouDk)
 3. [Tuesday 26 September](https://www.youtube.com/watch?v=8xFT9FPlm18)
 4. [Friday 29 September](https://www.youtube.com/watch?v=OZeDRtRmgkw)
+5. [Tuesday 3 October](https://www.youtube.com/watch?v=b5salYMZoyM)
