@@ -78,7 +78,7 @@ findSplit : {X : Set}{l m r : Nat}(nnn : l <[ m ]> r)(xs : Vec X m) ->
             FindSplit nnn xs
 findSplit zzz [] = splitBits [] []
 findSplit (lll nnn) (x ,- xs) with findSplit nnn xs
-findSplit (lll nnn) (x ,- .(xl >[ nnn ]< xr)) | splitBits xl xr = splitBits (x ,- xl) {!xr!}
+findSplit (lll nnn) (x ,- .(xl >[ nnn ]< xr)) | splitBits xl xr = splitBits (x ,- xl) xr
 findSplit (rrr nnn) xs = {!!}
 {-)-}
 
