@@ -17,6 +17,7 @@ record One : Set where
   -- there are no fields
   -- so that's trivial
   --   (can we have a constructor, for convenience?)
+  constructor <>
 
 data _+_ (S : Set)(T : Set) : Set where -- "where" wants an indented block
   -- to offer a choice of constructors, list them with their types
@@ -24,11 +25,27 @@ data _+_ (S : Set)(T : Set) : Set where -- "where" wants an indented block
   inr : T -> S + T
   -- in Haskell, this was called "Either S T"
 
+{-
 record _*_ (S : Set)(T : Set) : Set where
   field -- introduces a bunch of fields, listed with their types
     fst : S  
     snd : T
   -- in Haskell, this was called "(S, T)"
+-}
+
+-- _*_ IS GENERALIZED BY SIGMA
+
+record Sg (S : Set)(T : S -> Set) : Set where  -- Sg is short for "Sigma"
+  constructor _,_
+  field -- introduces a bunch of fields, listed with their types
+    fst : S  
+    snd : T fst
+open Sg public -- brings fst and snd into scope hereafter unto all inheritors
+-- make _*_ from Sg ?
+_*_ : Set -> Set -> Set
+S * T = Sg S \ _ -> T
+
+
 
 ------------------------------------------------------------------------------
 -- some simple proofs
@@ -134,12 +151,16 @@ trans->= (suc x) (suc y) (suc z) x>=y y>=z = trans->= x y z x>=y y>=z
 -- construction by proof
 ------------------------------------------------------------------------------
 
+{- -- MOVED UP TO REPLACE _*_
 record Sg (S : Set)(T : S -> Set) : Set where  -- Sg is short for "Sigma"
   constructor _,_
   field -- introduces a bunch of fields, listed with their types
     fst : S  
     snd : T fst
 -- make _*_ from Sg ?
+_*_ : Set -> Set -> Set
+S * T = Sg S \ _ -> T
+-}
 
 difference : (m n : Nat) -> m >= n -> Sg Nat \ d -> m == (n +N d)
                                    --       (                    )
@@ -149,7 +170,7 @@ difference (suc m) (suc n) m>=n with difference m n m>=n
 difference (suc m) (suc n) m>=n | d , q = d , (refl suc =$= q)
 
 tryMe      = difference 42 37 _
-don'tTryMe = difference 37 42 {!!}
+-- don'tTryMe = difference 37 42 {!!}
 
 
 ------------------------------------------------------------------------------

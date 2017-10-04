@@ -25,12 +25,15 @@ data _+_ (S : Set)(T : Set) : Set where -- "where" wants an indented block
   inr : T -> S + T
   -- in Haskell, this was called "Either S T"
 
-record _*_ (S : Set)(T : Set) : Set where
+record Sg (S : Set)(T : S -> Set) : Set where  -- Sg is short for "Sigma"
   constructor _,_
   field -- introduces a bunch of fields, listed with their types
     fst : S  
-    snd : T
-  -- in Haskell, this was called "(S, T)"
+    snd : T fst
+-- make _*_ from Sg ?
+
+_*_ : (S : Set)(T : Set) -> Set
+S * T = Sg S \ _ -> T
 
 ------------------------------------------------------------------------------
 -- some simple proofs
@@ -121,16 +124,19 @@ _=$=_ : {X Y : Set}{f f' : X -> Y}{x x' : X} ->
 refl f =$= refl x = refl (f x)
 {-)-}
 
-{-+}
+{-(-}
 zero-+N : (n : Nat) -> (zero +N n) == n
-zero-+N n = ?
+zero-+N n = refl n
 
 +N-zero : (n : Nat) -> (n +N zero) == n
-+N-zero n = ?
++N-zero zero = refl zero
++N-zero (suc n) = refl suc =$= +N-zero n
+
 
 assocLR-+N : (x y z : Nat) -> ((x +N y) +N z) == (x +N (y +N z))
-assocLR-+N x y z = ?
-{+-}
+assocLR-+N zero y z = refl (y +N z)
+assocLR-+N (suc x) y z rewrite assocLR-+N x y z = refl (suc (x +N (y +N z)))
+{-)-}
 
 ------------------------------------------------------------------------------
 -- computing types
@@ -142,8 +148,10 @@ x     >= zero   = One
 zero  >= suc y  = Zero
 suc x >= suc y  = x >= y
 
+{-
 a0 : 2 >= 4
 a0 = {!!}
+-}
 
 a1 : 4 >= 2
 a1 = <>
@@ -151,10 +159,15 @@ a1 = <>
 
 
 refl->= : (n : Nat) -> n >= n
-refl->= n = {!!}
+refl->= zero = <>
+refl->= (suc n) = refl->= n
 
 trans->= : (x y z : Nat) -> x >= y -> y >= z -> x >= z
-trans->= x y z x>=y y>=z = {!!}
+trans->= x y zero x>=y y>=z = <>
+trans->= zero zero (suc z) x>=y ()
+trans->= zero (suc y) (suc z) () y>=z
+trans->= (suc x) zero (suc z) x>=y ()
+trans->= (suc x) (suc y) (suc z) x>=y y>=z = trans->= x y z x>=y y>=z
 {-)-}
 
 
@@ -163,19 +176,17 @@ trans->= x y z x>=y y>=z = {!!}
 ------------------------------------------------------------------------------
 
 {-(-}
-record Sg (S : Set)(T : S -> Set) : Set where  -- Sg is short for "Sigma"
-  constructor _,_
-  field -- introduces a bunch of fields, listed with their types
-    fst : S  
-    snd : T fst
--- make _*_ from Sg ?
 
 difference : (m n : Nat) -> m >= n -> Sg Nat \ d -> m == (n +N d)
                                    --       (                    )
-difference m zero p = m , refl m
+difference m zero p    = m , refl m
 difference zero (suc n) ()
 difference (suc m) (suc n) p with difference m n p
-difference (suc m) (suc n) p | d , q = {!d!} , {!!}
+{-difference (suc .(n +N d)) (suc n) p
+  | d , refl .(n +N d) = d , refl (suc (n +N d))
+-}
+difference (suc m) (suc n) p | d , q rewrite q = {!!} --  d , refl (suc (n +N d))
+--difference (suc m) (suc n) p | d , q = d , (refl suc =$= q)
 
 tryMe      = difference 42 37 _
 don'tTryMe = difference 37 42 {!!}
@@ -210,9 +221,22 @@ don'tTryMe = difference 37 42 {!!}
 
 -- can't we loop?
 
+{-
+brexit : {A : Set} -> A
+brexit = brexit
+-}
+
 -- the function type is both implication and universal quantification,
 -- but why is it called Pi?
 
 -- why is Sigma called Sigma?
 
 -- B or nor B?
+
+{-
+exMid : {B : Set} -> B + (B -> Zero)
+exMid = {!!}
+
+deMorgan : {A B : Set} -> ((A * B) -> Zero) -> (A -> Zero) + (B -> Zero)
+deMorgan notAandB = {!!}
+-}
