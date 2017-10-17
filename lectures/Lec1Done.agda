@@ -44,7 +44,7 @@ open Sg public -- brings fst and snd into scope hereafter unto all inheritors
 -- make _*_ from Sg ?
 _*_ : Set -> Set -> Set
 S * T = Sg S \ _ -> T
-
+infixr 4 _*_ _,_
 
 
 ------------------------------------------------------------------------------
@@ -81,6 +81,20 @@ id = combinatorS combinatorK (combinatorK {_} {Zero})
 
 naughtE : {X : Set} -> Zero -> X
 naughtE ()
+
+-- standard composition: f << g is "f after g"
+_<<_ : {X Y Z : Set} -> (Y -> Z) -> (X -> Y) -> (X -> Z)
+(f << g) x = f (g x)
+
+-- diagrammatic composition: f >> g is "f then g"
+_>>_ : {X Y Z : Set} -> (X -> Y) -> (Y -> Z) -> (X -> Z)
+                     --       ^^^^^^^^          dominoes!
+(f >> g) x = g (f x)
+
+-- infix application
+_$_ : {S : Set}{T : S -> Set}(f : (x : S) -> T x)(s : S) -> T s
+f $ s = f s
+infixl 2 _$_
 
 
 ------------------------------------------------------------------------------
