@@ -24,6 +24,7 @@ _<<_ : {X Y Z : Set} -> (Y -> Z) -> (X -> Y) -> (X -> Z)
 _>>_ : {X Y Z : Set} -> (X -> Y) -> (Y -> Z) -> (X -> Z)
                      --       ^^^^^^^^          dominoes!
 (f >> g) x = g (f x)
+infixr 5 _>>_
 
 -- infix application
 _$_ : {S : Set}{T : S -> Set}(f : (x : S) -> T x)(s : S) -> T s
@@ -64,6 +65,8 @@ open Sg public
 _*_ : Set -> Set -> Set
 S * T = Sg S \ _ -> T
 
+infixr 4 _,_ _*_
+
 
 ------------------------------------------------------------------------------
 -- natural numbers and addition
@@ -96,6 +99,18 @@ refl f =$= refl x = refl (f x)
 
 infixl 2 _=$=_
 
+sym : {X : Set}{x y : X} -> x == y -> y == x
+sym (refl x) = refl x
+
+_[QED] : {X : Set}(x : X) -> x == x
+x [QED] = refl x
+_=[_>=_ : {X : Set}(x : X){y z : X} -> x == y -> y == z -> x == z
+x =[ refl .x >= q = q
+_=<_]=_ : {X : Set}(x : X){y z : X} -> y == x -> y == z -> x == z
+x =< refl .x ]= q = q
+infixr 1 _=[_>=_ _=<_]=_
+infixr 2 _[QED]
+
 
 ------------------------------------------------------------------------------
 -- greater-than-or-equals
@@ -119,3 +134,56 @@ trans->= (suc x) (suc y) (suc z) x>=y y>=z = trans->= x y z x>=y y>=z
 suc->= : (x : Nat) -> suc x >= x
 suc->= zero    = <>
 suc->= (suc x) = suc->= x
+
+
+----------------------------------------------------------------------------
+-- Two -- the type of Boolean values
+----------------------------------------------------------------------------
+
+data Two : Set where tt ff : Two
+{-# BUILTIN BOOL Two #-}
+{-# BUILTIN TRUE tt #-}
+{-# BUILTIN FALSE ff #-}
+
+-- nondependent conditional with traditional syntax
+if_then_else_ : forall {l}{X : Set l} -> Two -> X -> X -> X
+if tt then t else e = t
+if ff then t else e = e
+
+-- dependent conditional cooked for partial application
+caseTwo : forall {l}{P : Two -> Set l} -> P tt -> P ff -> (b : Two) -> P b
+caseTwo t f tt = t
+caseTwo t f ff = f
+
+
+----------------------------------------------------------------------------
+-- lists
+----------------------------------------------------------------------------
+
+data List (X : Set) : Set where
+  []   : List X
+  _,-_ : (x : X)(xs : List X) -> List X
+infixr 4 _,-_
+{-# COMPILE GHC List = data [] ([] | (:)) #-}
+{-# BUILTIN LIST List #-}
+{-# BUILTIN NIL [] #-}
+{-# BUILTIN CONS _,-_ #-}
+
+
+----------------------------------------------------------------------------
+-- chars and strings
+----------------------------------------------------------------------------
+
+postulate       -- this means that we just suppose the following things exist...
+  Char : Set
+  String : Set
+{-# BUILTIN CHAR Char #-}
+{-# BUILTIN STRING String #-}
+
+primitive       -- these are baked in; they even work!
+  primCharEquality    : Char -> Char -> Two
+  primStringAppend    : String -> String -> String
+  primStringToList    : String -> List Char
+  primStringFromList  : List Char -> String
+
+

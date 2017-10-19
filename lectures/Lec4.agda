@@ -38,7 +38,7 @@ module MAYBE-CAT where
   open _=>_ MAYBE
 
   unMaybe : {T : Set} -> Maybe T -> T
-  unMaybe (yes t) = {!t!}
+  unMaybe (yes t) = t
   unMaybe no = {!!}
 
   joinMaybe : {T : Set} -> Maybe (Maybe T) -> Maybe T
