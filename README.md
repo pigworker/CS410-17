@@ -27,3 +27,6 @@ $ echo $0
 5. [Tuesday 3 October](https://www.youtube.com/watch?v=b5salYMZoyM)
 6. [Friday 6 October](https://www.youtube.com/watch?v=RW4aC_6n0yQ)
 7. [Tuesday 10 October](https://www.youtube.com/watch?v=2LxtHeZlaVw)
+8. [Friday 13 October](https://www.youtube.com/watch?v=RCRddhYegzI)
+9. [Tuesday 17 October](https://www.youtube.com/watch?v=vTmYvoDrBlc)
+10. [Friday 20 October](https://www.youtube.com/watch?v=2sykXdidZVA)
