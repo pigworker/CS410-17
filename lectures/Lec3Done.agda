@@ -22,6 +22,15 @@ extensionality' {f = f}{g = g} q =
   refl imp =$= extensionality {f = \ x -> f {x}}{g = \ x -> g {x}}
     q                    
 
+_[QED] : {X : Set}(x : X) -> x == x
+x [QED] = refl x
+_=[_>=_ : {X : Set}(x : X){y z : X} -> x == y -> y == z -> x == z
+x =[ refl .x >= q = q
+_=<_]=_ : {X : Set}(x : X){y z : X} -> y == x -> y == z -> x == z
+x =< refl .x ]= q = q
+infixr 1 _=[_>=_ _=<_]=_
+infixr 2 _[QED]
+
 record Category : Set where
   field
 
@@ -41,6 +50,22 @@ record Category : Set where
                     (f >~> id~>) == f
     law->~>>~>  : {Q R S T : Obj} (f : Q ~> R)(g : R ~> S)(h : S ~> T) ->
                     ((f >~> g) >~> h) == (f >~> (g >~> h))
+
+  assocn : {Q R R' S T : Obj}
+            {f  : Q ~> R} {g : R ~> S}
+            {f' : Q ~> R'}{g' : R' ~> S}
+            {h : S ~> T} ->
+            (f >~> g) == (f' >~> g') ->
+            (f >~> g >~> h) == (f' >~> g' >~> h)
+  assocn {f = f} {g = g} {f' = f'} {g' = g'} {h = h} q =
+    f >~> g >~> h
+      =< law->~>>~> _ _ _ ]=
+    (f >~> g) >~> h
+      =[ refl _>~>_ =$= q =$= refl h >=
+    (f' >~> g') >~> h
+      =[ law->~>>~> _ _ _ >=
+    f' >~> g' >~> h
+      [QED]
 
   infixr 3 _>~>_
 
@@ -147,17 +172,6 @@ ADD d = record { F-Obj = (d +N_)
   help : (d m n : Nat) -> m >= n -> (d +N m) >= (d +N n)
   help zero m n m>=n = m>=n
   help (suc d) m n m>=n = help d m n m>=n
-
-
-_[QED] : {X : Set}(x : X) -> x == x
-x [QED] = refl x
-_=[_>=_ : {X : Set}(x : X){y z : X} -> x == y -> y == z -> x == z
-x =[ refl .x >= q = q
-_=<_]=_ : {X : Set}(x : X){y z : X} -> y == x -> y == z -> x == z
-x =< refl .x ]= q = q
-infixr 2 _=[_>=_ _=<_]=_
-infixr 3 _[QED]
-
 
 Thing : {C D : Category}(F G : C => D) -> Set
 Thing {C}{D}

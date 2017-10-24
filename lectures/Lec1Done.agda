@@ -128,6 +128,7 @@ data _==_ {X : Set} : X -> X -> Set where
 _=$=_ : {X Y : Set}{f f' : X -> Y}{x x' : X} ->
         f == f' -> x == x' -> f x == f' x'
 refl f =$= refl x = refl (f x)
+infixl 2 _=$=_
 
 zero-+N : (n : Nat) -> (zero +N n) == n
 zero-+N n = refl n
