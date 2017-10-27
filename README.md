@@ -20,10 +20,14 @@ $ echo $0
 
 ## Lecture videos on YouTube
 
-1. [Tuesday 19 September](https://www.youtube.com/watch?v=O4oczQry9Jw)
-2. [Friday 22 September](https://www.youtube.com/watch?v=qcVZxQTouDk)
-3. [Tuesday 26 September](https://www.youtube.com/watch?v=8xFT9FPlm18)
-4. [Friday 29 September](https://www.youtube.com/watch?v=OZeDRtRmgkw)
-5. [Tuesday 3 October](https://www.youtube.com/watch?v=b5salYMZoyM)
-6. [Friday 6 October](https://www.youtube.com/watch?v=RW4aC_6n0yQ)
-7. [Tuesday 10 October](https://www.youtube.com/watch?v=2LxtHeZlaVw)
+1. [Tuesday 19 September](https://www.youtube.com/watch?v=O4oczQry9Jw) Programs and Proofs
+2. [Friday 22 September](https://www.youtube.com/watch?v=qcVZxQTouDk) more Programs and Proofs, Introducing "with"
+3. [Tuesday 26 September](https://www.youtube.com/watch?v=8xFT9FPlm18) Proof by Induction
+4. [Friday 29 September](https://www.youtube.com/watch?v=OZeDRtRmgkw) Sigma, Difference, Vector Take
+5. [Tuesday 3 October](https://www.youtube.com/watch?v=b5salYMZoyM) How Rewrite Works
+6. [Friday 6 October](https://www.youtube.com/watch?v=RW4aC_6n0yQ) A Comedy of (Entirely Non-Deliberate) Errors
+7. [Tuesday 10 October](https://www.youtube.com/watch?v=2LxtHeZlaVw) "Dominoes", no really, this time
+8. [Friday 13 October](https://www.youtube.com/watch?v=RCRddhYegzI) Functors
+9. [Tuesday 17 October](https://www.youtube.com/watch?v=vTmYvoDrBlc) From Functors to Monads
+10. [Friday 20 October](https://www.youtube.com/watch?v=2sykXdidZVA) Natural Transformations and Monads
+11. [Tuesday 24 October](https://www.youtube.com/watch?v=iYegg8Rzhr4) From Monads to Input/Output
