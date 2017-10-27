@@ -19,6 +19,9 @@ record One : Set where
   --   (can we have a constructor, for convenience?)
   constructor <>
 
+{-# COMPILE GHC One = data () (()) #-}
+
+
 data _+_ (S : Set)(T : Set) : Set where -- "where" wants an indented block
   -- to offer a choice of constructors, list them with their types
   inl : S -> S + T     -- constructors can pack up stuff
@@ -45,6 +48,7 @@ open Sg public -- brings fst and snd into scope hereafter unto all inheritors
 _*_ : Set -> Set -> Set
 S * T = Sg S \ _ -> T
 infixr 4 _*_ _,_
+
 
 
 ------------------------------------------------------------------------------

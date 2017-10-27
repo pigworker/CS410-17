@@ -19,6 +19,7 @@ F >F> G = F >~> G where open Category CATEGORY
 data Maybe (X : Set) : Set where
   yes : (x : X) -> Maybe X
   no  : Maybe X
+{-# COMPILE GHC Maybe = data Maybe (Just | Nothing) #-}
 
 maybe : {X Y : Set} -> (X -> Y) -> Maybe X -> Maybe Y
 maybe f (yes x) = yes (f x)
@@ -126,7 +127,7 @@ naturality UNIT-MAYBE f = refl _
 
 MULT-MAYBE : (MAYBE >=> MAYBE) ~~> MAYBE
 MULT-MAYBE = record { xf = joinMaybe
-  ; naturality = \ f -> extensionality \ {
+  ; naturality = \ f -> extensionality \ { 
        (yes x) → refl (maybe f x)
       ; no → refl no } }
 
@@ -205,16 +206,15 @@ MAYBE-Monad : Monad MAYBE
 MAYBE-Monad = record
   { unit = UNIT-MAYBE
   ; mult = MULT-MAYBE
-  ; unitMult = refl id
-  ; multUnit = extensionality \
-     { (yes x) -> refl (yes x) ; no -> refl no }
-  ; multMult = extensionality \
-     { (yes x) -> refl (joinMaybe x) ; no -> refl no }
+  ; unitMult = refl _
+  ; multUnit = extensionality \ { (yes x) -> refl _ ; no -> refl _ }
+  ; multMult = extensionality \ { (yes mmx) -> refl _ ; no -> refl _ }
   }
 
 data List (X : Set) : Set where
   []   : List X
   _,-_ : (x : X)(xs : List X) -> List X
+{-# COMPILE GHC List = data [] ([] | (:)) #-}
 
 list : {X Y : Set} -> (X -> Y) -> List X -> List Y
 list f []         = []
@@ -237,6 +237,10 @@ LIST = record
   listCp f g (x ,- xs) = refl (_,-_ (g (f x))) =$= listCp f g xs
 
 data Two : Set where tt ff : Two
+{-# BUILTIN BOOL Two #-}
+{-# BUILTIN TRUE tt #-}
+{-# BUILTIN FALSE ff #-}
+{- COMPILE GHC Two = data Bool (True | False) -}
 
 data BitProcess (X : Set) : Set where  -- in what way is X used?
   stop : (x : X) -> BitProcess X                       -- stop with value x
@@ -244,17 +248,17 @@ data BitProcess (X : Set) : Set where  -- in what way is X used?
   recv : (kt kf : BitProcess X) -> BitProcess X        -- receive bit, continue as
                                                        --   kt if tt, kf if ff
 
-{-+}
+{-(-}
 send1 : (b : Two) -> BitProcess One
-send1 b = ?
-{+-}
+send1 b = send b (stop <>)
+{-)-}
 
-{-+}
+{-(-}
 recv1 : BitProcess Two
-recv1 = ?
-{+-}
+recv1 = recv (stop tt) (stop ff)
+{-)-}
 
-{-+}
+{-(-}
 bpRun : forall {X} ->  BitProcess X   -- a process to run
                    ->  List Two       -- a list of bits waiting to be input
                    ->  List Two       -- the list of bits output
@@ -262,8 +266,14 @@ bpRun : forall {X} ->  BitProcess X   -- a process to run
                        (  X           -- the resulting value
                        *  List Two    -- and the unused input
                        )
-bpRun px bs = {!!}
-{+-}
+bpRun (stop x) bs = [] , yes (x , bs)
+bpRun (send b px) bs = let os , mz = bpRun px bs in (b ,- os) , mz
+bpRun (recv pxt pxf) [] = [] , no
+bpRun (recv pxt pxf) (tt ,- bs) = bpRun pxt bs
+bpRun (recv pxt pxf) (ff ,- bs) = bpRun pxf bs
+{-)-}
+
+example = bpRun recv1 (tt ,- [])
 
 bitProcess : {X Y : Set} -> (X -> Y) -> BitProcess X -> BitProcess Y
 bitProcess f (stop x) = stop (f x)
@@ -289,26 +299,55 @@ BITPROCESS = record
   helpCp f g (recv kt kf) rewrite helpCp f g kt | helpCp f g kf
     = refl (recv (bitProcess g (bitProcess f kt)) (bitProcess g (bitProcess f kf)))
 
-{-+}
+{-(-}
 UNIT-BP : ID ~~> BITPROCESS
-UNIT-BP = {!!}
-{+-}
+UNIT-BP = record { xf = stop
+                 ; naturality = \ f -> refl _
+                 }
+{-)-}
 
-{-+}
+join-BP : {X : Set} -> BitProcess (BitProcess X) -> BitProcess X
+join-BP (stop px) = px
+join-BP (send b ppx) = send b (join-BP ppx)
+join-BP (recv ppxt ppxf) = recv (join-BP ppxt) (join-BP ppxf)
+
+{-(-}
 MULT-BP : (BITPROCESS >=> BITPROCESS) ~~> BITPROCESS
-MULT-BP = {!!}
-{+-}
+MULT-BP = record
+  { xf = join-BP
+  ; naturality = \ f -> extensionality (help f )
+  } where
+  help : ∀ {X Y} (f : X → Y) (x : BitProcess (BitProcess X)) →
+       join-BP (bitProcess (bitProcess f) x) == bitProcess f (join-BP x)
+  help f (stop x) = refl (bitProcess f x)
+  help f (send b p) rewrite help f p
+    = refl (send b (bitProcess f (join-BP p)))
+  help f (recv pt pf) rewrite help f pf | help f pt
+    = refl (recv (bitProcess f (join-BP pt)) (bitProcess f (join-BP pf)))
+{-)-}
 
-{-+}
+{-(-}
 BITPROCESS-Monad : Monad BITPROCESS
 BITPROCESS-Monad = record
   { unit = UNIT-BP
   ; mult = MULT-BP
-  ; unitMult = {!!}
-  ; multUnit = {!!}
-  ; multMult = {!!}
+  ; unitMult = refl id
+  ; multUnit = extensionality help
+  ; multMult = extensionality yelp
   } where
-{+-}
+  
+  help : ∀ {X} (x : BitProcess X) → join-BP (bitProcess stop x) == x
+  help (stop x) = refl (stop x)
+  help (send b p)  rewrite help p = refl (send b p)
+  help (recv pt pf) rewrite help pt | help pf = refl (recv pt pf)
+  
+  yelp : ∀ {X} (x : BitProcess (BitProcess (BitProcess X))) →
+       join-BP (join-BP x) == join-BP (bitProcess join-BP x)
+  yelp (stop x) = refl _
+  yelp (send b p)  rewrite yelp p = refl _
+  yelp (recv pt pf) rewrite yelp pt | yelp pf = refl _
+       
+{-)-}
 
 module BIND {F : SET => SET}(M : Monad F) where
 
@@ -316,7 +355,58 @@ module BIND {F : SET => SET}(M : Monad F) where
   open Monad M public
   open Category KLEISLI public
 
-  {-+}
+  {-(-}
   _>>=_ : {S T : Set} -> F-Obj S -> (S -> F-Obj T) -> F-Obj T
-  fs >>= k = {!!}
-  {+-}
+  fs >>= k = (id >~> k) fs
+  {-)-}
+
+open BIND BITPROCESS-Monad
+
+bpEcho : BitProcess One
+bpEcho = recv1 >>= \ b ->
+         send1 b
+
+BP-SEM : Set -> Set
+BP-SEM X = List Two       -- a list of bits waiting to be input
+           ->  List Two       -- the list of bits output
+           *  Maybe          -- and, if we don't run out of input
+           (  X           -- the resulting value
+           *  List Two    -- and the unused input
+           )
+
+record _**_ (S T : Set) : Set where
+  constructor _,_
+  field
+    outl : S
+    outr : T
+open _**_
+{-# COMPILE GHC _**_ = data (,) ((,)) #-}
+infixr 4 _**_ _,_
+
+postulate       -- Haskell has a monad for doing IO, which we use at the top level
+  IO       : Set -> Set
+  mainLoop : {S : Set} -> S -> (S -> Two -> (List Two ** Maybe S)) -> IO One
+{-# BUILTIN IO IO #-}
+{-# COMPILE GHC IO = type IO #-}
+{-# COMPILE GHC mainLoop = (\ _ -> Lec4HS.mainLoop) #-}
+{-# FOREIGN GHC import qualified Lec4HS #-}
+
+STATE : Set
+STATE = Two -> BitProcess One
+
+step : STATE -> Two -> (List Two ** Maybe STATE)
+step s b = go (s b)
+  where
+    go : BitProcess One → List Two ** Maybe (Two → BitProcess One)
+    go (stop <>) = [] , no
+    go (send b p) with go p
+    ...              | bs , ms = (b ,- bs) , ms
+    go (recv pt pf) = [] , yes \ { tt → pt ; ff → pf }
+
+myState : STATE
+myState tt = bpEcho >>= \ _ -> bpEcho
+myState ff = bpEcho
+
+main : IO One
+main = mainLoop myState step
+example2 = bpRun (myState ff) (tt ,- ff ,- [])
