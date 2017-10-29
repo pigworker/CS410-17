@@ -31,3 +31,7 @@ $ echo $0
 9. [Tuesday 17 October](https://www.youtube.com/watch?v=vTmYvoDrBlc) From Functors to Monads
 10. [Friday 20 October](https://www.youtube.com/watch?v=2sykXdidZVA) Natural Transformations and Monads
 11. [Tuesday 24 October](https://www.youtube.com/watch?v=iYegg8Rzhr4) From Monads to Input/Output
+
+## Other useful stuff
+
+1. [SpaceMonads!](https://www.youtube.com/watch?v=QojLQY5H0RI) my keynote from CodeMesh 2016, on which Ex2 is based
