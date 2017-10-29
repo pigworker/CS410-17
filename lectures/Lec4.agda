@@ -237,10 +237,10 @@ LIST = record
   listCp f g (x ,- xs) = refl (_,-_ (g (f x))) =$= listCp f g xs
 
 data Two : Set where tt ff : Two
-{-# BUILTIN BOOL Two #-}
-{-# BUILTIN TRUE tt #-}
-{-# BUILTIN FALSE ff #-}
-{- COMPILE GHC Two = data Bool (True | False) -}
+{- BUILTIN BOOL Two -}
+{- BUILTIN FALSE ff -}
+{- BUILTIN TRUE tt -}
+{-# COMPILE GHC Two = data Bool (True | False) #-}
 
 data BitProcess (X : Set) : Set where  -- in what way is X used?
   stop : (x : X) -> BitProcess X                       -- stop with value x
@@ -384,11 +384,14 @@ open _**_
 infixr 4 _**_ _,_
 
 postulate       -- Haskell has a monad for doing IO, which we use at the top level
-  IO       : Set -> Set
-  mainLoop : {S : Set} -> S -> (S -> Two -> (List Two ** Maybe S)) -> IO One
+  IO        : Set -> Set
+  mainLoop  : {S : Set} -> S -> (S -> Two -> (List Two ** Maybe S)) -> IO One
+  mainOutIn : {S : Set} -> S -> (S -> (List Two ** Maybe (Two -> S))) -> IO One
+
 {-# BUILTIN IO IO #-}
 {-# COMPILE GHC IO = type IO #-}
 {-# COMPILE GHC mainLoop = (\ _ -> Lec4HS.mainLoop) #-}
+{-# COMPILE GHC mainOutIn = (\ _ -> Lec4HS.mainOutIn) #-}
 {-# FOREIGN GHC import qualified Lec4HS #-}
 
 STATE : Set
@@ -407,6 +410,17 @@ myState : STATE
 myState tt = bpEcho >>= \ _ -> bpEcho
 myState ff = bpEcho
 
+{-
 main : IO One
 main = mainLoop myState step
+-}
 example2 = bpRun (myState ff) (tt ,- ff ,- [])
+
+outIn : BitProcess One -> List Two ** Maybe (Two -> BitProcess One)
+outIn (stop <>) = [] , no
+outIn (send b p) with outIn p
+... | os , mk = (b ,- os) , mk
+outIn (recv pt pf) = [] , yes \ { tt → pt ; ff → pf }
+
+main : IO One
+main = mainOutIn (send1 ff >>= \ _ -> bpEcho >>= \ _ -> bpEcho) outIn

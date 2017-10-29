@@ -97,7 +97,10 @@ _=$=_ : {X Y : Set}{f f' : X -> Y}{x x' : X} ->
         f == f' -> x == x' -> f x == f' x'
 refl f =$= refl x = refl (f x)
 
-infixl 2 _=$=_
+_=$_ : {S : Set}{T : S -> Set}{f g : (x : S) -> T x} -> (f == g) -> (x : S) -> f x == g x
+refl f =$ x = refl (f x)
+
+infixl 2 _=$=_ _=$_
 
 sym : {X : Set}{x y : X} -> x == y -> y == x
 sym (refl x) = refl x
