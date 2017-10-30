@@ -31,6 +31,7 @@ $ echo $0
 9. [Tuesday 17 October](https://www.youtube.com/watch?v=vTmYvoDrBlc) From Functors to Monads
 10. [Friday 20 October](https://www.youtube.com/watch?v=2sykXdidZVA) Natural Transformations and Monads
 11. [Tuesday 24 October](https://www.youtube.com/watch?v=iYegg8Rzhr4) From Monads to Input/Output
+12. [Friday 27 October](https://www.youtube.com/watch?v=8WUz2HmXBqI) How To Run A Program (and come a-cropper!)
 
 ## Other useful stuff
 
