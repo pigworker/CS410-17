@@ -414,6 +414,7 @@ myState ff = bpEcho
 main : IO One
 main = mainLoop myState step
 -}
+
 example2 = bpRun (myState ff) (tt ,- ff ,- [])
 
 outIn : BitProcess One -> List Two ** Maybe (Two -> BitProcess One)
@@ -424,3 +425,124 @@ outIn (recv pt pf) = [] , yes \ { tt → pt ; ff → pf }
 
 main : IO One
 main = mainOutIn (send1 ff >>= \ _ -> bpEcho >>= \ _ -> bpEcho) outIn
+
+
+
+_-:>_ : {I : Set} -> (I -> Set) -> (I -> Set) -> (I -> Set)
+(S -:> T) i = S i -> T i
+
+[_] : {I : Set} -> (I -> Set) -> Set
+[ P ] = forall i -> P i    -- [_] {I} P = (i : I) -> P i
+
+_->SET : Set -> Category
+I ->SET = record
+  { Obj    = I -> Set                 -- I-indexed sets
+  ; _~>_   = \ S T -> [ S -:> T ]     -- index-respecting functions
+  ; id~>   = \ i -> id                -- the identity at every index
+  ; _>~>_  = \ f g i -> f i >> g i    -- composition at every index
+  ; law-id~>>~> = refl                -- and the laws are very boring
+  ; law->~>id~> = refl
+  ; law->~>>~>  = \ f g h -> refl _
+  }
+
+All : {X : Set} -> (X -> Set) -> (List X -> Set)
+All P [] = One
+All P (x ,- xs) = P x * All P xs
+
+example3 : All (Vec Two) (1 ,- 2 ,- 3 ,- [])
+example3 = (tt ,- [])
+         , (tt ,- ff ,- [])
+         , (tt ,- ff ,- tt ,- [])
+         , <>
+
+record _|>_ (I O : Set) : Set where
+  field
+    Cuts   : O -> Set                      -- given o : O, how may we cut it?
+    inners : {o : O} -> Cuts o -> List I   -- given how we cut it, what are
+                                           --   the shapes of its pieces?
+
+-- Let us have some examples right away!
+
+copy : Nat -> List One
+copy zero = []
+copy (suc n) = <> ,- copy n
+
+VecCut : One |> Nat              -- cut numbers into boring pieces
+VecCut = record
+  { Cuts = \ n -> One            -- there is one way to cut n
+  ; inners = \ {n} _ -> copy n   -- and you get n pieces
+  }
+
+-- Here's a less boring example. You can cut a number into *two* pieces
+-- by finding two numbers that add to it.
+
+NatCut : Nat |> Nat
+NatCut = record
+  { Cuts = \ mn -> Sg Nat \ m -> Sg Nat \ n -> (m +N n) == mn
+  ; inners = \ { (m , n , _) -> m ,- n ,- [] }
+  }
+
+-- The point is that we can make data structures that record how we
+-- built an O-shaped thing from I-shaped pieces.
+
+record Cutting {I O}(C : I |> O)(P : I -> Set)(o : O) : Set where
+  constructor _8><_               -- "scissors"
+  open _|>_ C
+  field
+    cut     : Cuts o              -- we decide how to cut o
+    pieces  : All P (inners cut)  -- then we give all the pieces.
+infixr 3 _8><_
+
+example4 : Cutting NatCut (Vec Two) 5
+example4 = (3 , 2 , refl 5) 8>< ((tt ,- tt ,- tt ,- []) , (ff ,- ff ,- []) , <>)
+
+data Interior {I}(C : I |> I)(T : I -> Set)(i : I) : Set where
+                                         -- either...
+  tile : T i -> Interior C T i           -- we have a tile that fits, or...
+  <_>  : Cutting C (Interior C T) i ->   -- ...we cut, then tile the pieces.
+         Interior C T i
+
+MayC : One |> One
+MayC = record { Cuts = \ _ -> One ; inners = \ _ -> [] }
+
+Maybe' : Set -> Set
+Maybe' X = Interior MayC (\ _ -> X) <>
+
+yes' : {X : Set} -> X -> Maybe' X
+yes' x = tile x
+
+no' : {X : Set} -> Maybe' X
+no' = < <> 8>< <> >
+
+BPC : One |> One
+BPC = record { Cuts = \ _ -> Two + One
+             ; inners = \ { (inl x) → <> ,- []
+                          ; (inr x) → <> ,- <> ,- []
+                          }
+             }
+
+data Type : Set where nat two : Type
+
+Val : Type -> Set
+Val nat = Nat
+Val two = Two
+
+data Op : Type -> Set where
+  val : {T : Type} -> Val T -> Op T
+  add : Op nat
+  if : {T : Type} -> Op T
+
+Syntax : Type |> Type
+_|>_.Cuts Syntax T = Op T
+_|>_.inners Syntax {T} (val x) = []
+_|>_.inners Syntax {.nat} add = nat ,- nat ,- []
+_|>_.inners Syntax {T} if = two ,- T ,- T ,- []
+
+eval : {T : Type}{X : Type -> Set} -> Interior Syntax X T ->
+       ({T : Type} -> X T -> Val T) -> Val T
+eval (tile x) g = g x
+eval < val v 8>< <> > g = v
+eval < add 8>< e1 , e2 , <> > g = eval e1 g +N eval e2 g
+eval < if 8>< e1 , e2 , e3 , <> > g with eval e1 g
+eval < if 8>< e1 , e2 , e3 , <> > g | tt = eval e2 g
+eval < if 8>< e1 , e2 , e3 , <> > g | ff = eval e3 g
