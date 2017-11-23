@@ -33,6 +33,11 @@ $ echo $0
 11. [Tuesday 24 October](https://www.youtube.com/watch?v=iYegg8Rzhr4) From Monads to Input/Output
 12. [Friday 27 October](https://www.youtube.com/watch?v=8WUz2HmXBqI) How to Run a Program (and come a-cropper) [bug report](https://github.com/agda/agda/issues/2821)
 13. [Tuesday 31 October](https://www.youtube.com/watch?v=MwtWdiyFJtA) Monads on Indexed Sets (Ex2)
+14. [Friday 3 November](https://www.youtube.com/watch?v=kX3mvyFHDDU) What is an Application?
+15. [Tuesday 7 November](https://www.youtube.com/watch?v=ZCdYIEwcna0) Coinduction and Coalgebras
+16. [Friday 10 November](https://www.youtube.com/watch?v=AjyUNakYHRs) Polynomial Data and Codata
+17. [Tuesday 14 November](https://www.youtube.com/watch?v=E8xIJolKEAI) A Polynomial Universe
+18. [Friday 17 November](https://www.youtube.com/watch?v=-3MiZ80WldY) The Zipper (Differentiating Polynomial Types)
 
 ## Other useful stuff
 
