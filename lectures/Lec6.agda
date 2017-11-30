@@ -255,15 +255,25 @@ data Interior {I}(C : I |> I)(T : I -> Set)(i : I) : Set where
   <_>  : Cutting C (Interior C T) i ->   -- ...we cut, then tile the pieces.
          Interior C T i
 
-polyCon : Poly One -> One |> One
+
+_+L_ : {X : Set} -> List X -> List X -> List X
+[] +L ys = ys
+(x ,- xs) +L ys = x ,- (xs +L ys)
+
+polyCon : {I : Set} -> Poly I -> I |> One
 _|>_.Cuts (polyCon p) <> = Eval (\ _ -> One) p
-_|>_.inners (polyCon (var' x)) <> = <> ,- []
-_|>_.inners (polyCon (konst' x)) s = {![]!}
-_|>_.inners (polyCon (p +' p₁)) s = {!!}
-_|>_.inners (polyCon (p *' q)) (sp , sq) = {!!}
+_|>_.inners (polyCon (var' i)) <> = i ,- []
+_|>_.inners (polyCon (konst' x)) s = []
+_|>_.inners (polyCon (p +' q)) (inl xp) = _|>_.inners (polyCon p) xp
+_|>_.inners (polyCon (p +' q)) (inr xq) =  _|>_.inners (polyCon q) xq
+_|>_.inners (polyCon (p *' q)) (sp , sq) =
+  _|>_.inners (polyCon p) sp +L  _|>_.inners (polyCon q) sq
 
 
-{-+}
+Choose : {I J : Set} -> (I -> Set) -> (J -> Set) -> (I + J) -> Set
+Choose X Y (inl i) = X i
+Choose X Y (inr j) = Y j
+
 data MU {I           -- what sorts of "elements" do we store?
          J           -- what sorts of "nodes" do we have?
          : Set}
@@ -271,14 +281,40 @@ data MU {I           -- what sorts of "elements" do we store?
         (X : I -> Set)             -- what are the elements?
         (j : J)                    -- what sort is the outermost node?
         : Set where
-  <_> : Eval (\ { (inl i) -> X i             -- elements in element positions 
-                ; (inr j') -> MU F X j' })   -- subnodes in recursive positions
+  <_> : Eval (Choose X (MU F X))   -- subnodes in recursive positions
              (F j)
     ->  MU F X j
         
 VecF : Nat -> Poly (One + Nat)
-VecF n = {!!}
+VecF zero = konst' tt
+VecF (suc n) = (var' (inl <>)) *' (var' (inr n))
 
 VEC : Nat -> Set -> Set
 VEC n X = MU VecF (\ _ -> X) n
-{+-}
+
+vnil : {X : Set} -> VEC zero X
+vnil = < <> >
+
+vcons : {X : Set}{n : Nat} -> X -> VEC n X -> VEC (suc n) X
+vcons x xs = < (x , xs) >
+
+gmap : {I           -- what sorts of "elements" do we store?
+         J           -- what sorts of "nodes" do we have?
+         : Set}
+        {F : J -> Poly (I + J)}    -- what is the structure of each sort of node?
+        {X Y : I -> Set} ->             -- what are the elements?
+        ((i : I) -> X i -> Y i) ->
+        (j : J) ->
+        MU F X j -> MU F Y j
+gmapHelp : ∀ {I J} (F : J → Poly (I + J)) {X Y : I → Set}
+             (w : Poly (I + J)) →
+           ((i : I) → X i → Y i) →
+           Eval (Choose X (MU F X)) w →
+           Eval (Choose Y (MU F Y)) w
+gmap {F = F} f j < xt > = < gmapHelp F (F j) f xt >
+gmapHelp F (var' (inl i)) f x = f i x
+gmapHelp F (var' (inr j)) f t = gmap f j t
+gmapHelp F (konst' x) f v = v
+gmapHelp F (p +' q) f (inl xp) = inl (gmapHelp F p f xp)
+gmapHelp F (p +' q) f (inr xq) = inr (gmapHelp F q f xq)
+gmapHelp F (p *' q) f (xp , xq) = (gmapHelp F p f xp) , (gmapHelp F q f xq)
