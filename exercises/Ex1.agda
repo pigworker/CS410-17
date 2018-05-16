@@ -8,6 +8,11 @@
 -- NOTE (19/9/17) This file is currently incomplete: more will arrive on
 -- GitHub.
 
+-- MARK SCHEME (transcribed from paper): the (m) numbers add up to slightly
+-- more than 25, so should be taken as the maximum number of marks losable on
+-- the exercise. In fact, I did mark it negatively, but mostly because it was
+-- done so well (with Agda's help) that it was easier to find the errors.
+
 
 ------------------------------------------------------------------------------
 -- Dependencies
@@ -38,7 +43,7 @@ infixr 4 _,-_   -- the "cons" operator associates to the right
 
 -- We can rule out nasty head and tail errors by insisting on nonemptiness!
 
---??--1.1---------------------------------------------------------------------
+--??--1.1-(2)-----------------------------------------------------------------
 
 vHead : {X : Set}{n : Nat} -> Vec X (suc n) -> X
 vHead xs = {!!}
@@ -57,7 +62,7 @@ vHeadTailFact xs = {!!}
 -- Concatenation and its Inverse
 ------------------------------------------------------------------------------
 
---??--1.2---------------------------------------------------------------------
+--??--1.2-(2)-----------------------------------------------------------------
 
 _+V_ : {X : Set}{m n : Nat} -> Vec X m -> Vec X n -> Vec X (m +N n)
 xs +V ys = {!!}
@@ -88,7 +93,7 @@ vChopAppendFact xs ys = {!!}
 -- Show that two vMaps in a row can be collapsed to just one, or
 -- "composition of maps is map of compositions"
 
---??--1.3---------------------------------------------------------------------
+--??--1.3-(2)-----------------------------------------------------------------
 
 vMap : {X Y : Set} -> (X -> Y) -> {n : Nat} -> Vec X n -> Vec Y n
 vMap f xs = {!!}
@@ -114,7 +119,7 @@ vMapCpFact heq xs = {!!}
 -- and you want to concatenate and map, it doesn't matter which you do
 -- first.
 
---??--1.4---------------------------------------------------------------------
+--??--1.4-(1)-----------------------------------------------------------------
 
 vMap+VFact : {X Y : Set}(f : X -> Y) ->
              {m n : Nat}(xs : Vec X m)(xs' : Vec X n) ->
@@ -131,7 +136,7 @@ vMap+VFact f xs xs' = {!!}
 -- Applicative Structure (giving mapping and zipping cheaply)
 ------------------------------------------------------------------------------
 
---??--1.5---------------------------------------------------------------------
+--??--1.5-(2)-----------------------------------------------------------------
 
 -- HINT: you will need to override the default invisibility of n to do this.
 vPure : {X : Set} -> X -> {n : Nat} -> Vec X n
@@ -164,7 +169,7 @@ vZip xs ys = {!!}
 -- some laws should hold for applicative functors.
 -- Check that this is the case.
 
---??--1.6---------------------------------------------------------------------
+--??--1.6-(2)-----------------------------------------------------------------
 
 vIdentity : {X : Set}{f : X -> X}(feq : (x : X) -> f x == x) ->
             {n : Nat}(xs : Vec X n) -> (vPure f $V xs) == xs
@@ -202,7 +207,7 @@ data _<=_ : Nat -> Nat -> Set where
 --   (a.k.a. "google the type" without "I feel lucky")
 -- The -s n option also helps.
 
---??--1.7---------------------------------------------------------------------
+--??--1.7-(1)-----------------------------------------------------------------
 
 all0<=4 : Vec (0 <= 4) {!!}
 all0<=4 = {!!}
@@ -235,7 +240,7 @@ no5<=4 th = {!!}
 -- The os constructor tells you to take the next element of the vector;
 -- the o' constructor tells you to omit the next element of the vector.
 
---??--1.8---------------------------------------------------------------------
+--??--1.8-(2)-----------------------------------------------------------------
 
 _<?=_ : {X : Set}{n m : Nat} -> n <= m -> Vec X m
                      -> Vec X n
@@ -257,7 +262,7 @@ vMap<?=Fact f th xs = {!!}
 
 -- Construct the identity thinning and the empty thinning.
 
---??--1.9---------------------------------------------------------------------
+--??--1.9-(1)-----------------------------------------------------------------
 
 oi : {n : Nat} -> n <= n
 oi {n}  = {!!}
@@ -270,7 +275,7 @@ oe {n}  = {!!}
 
 -- Show that all empty thinnings are equal to yours.
 
---??--1.10--------------------------------------------------------------------
+--??--1.10-(1)----------------------------------------------------------------
 
 oeUnique : {n : Nat}(th : 0 <= n) -> th == oe
 oeUnique i = {!!}
@@ -284,7 +289,7 @@ oeUnique i = {!!}
 -- HINT: you WILL need to expose the invisible numbers.
 -- HINT: check CS410-Prelude for a reminder of >=
 
---??--1.11--------------------------------------------------------------------
+--??--1.11-(3)----------------------------------------------------------------
 
 oTooBig : {n m : Nat} -> n >= m -> suc n <= m -> Zero
 oTooBig {n} {m} n>=m th = {!!}
@@ -297,7 +302,7 @@ oiUnique th = {!!}
 
 -- Show that the identity thinning selects the whole vector
 
---??--1.12--------------------------------------------------------------------
+--??--1.12-(1)----------------------------------------------------------------
 
 id-<?= : {X : Set}{n : Nat}(xs : Vec X n) -> (oi <?= xs) == xs
 id-<?= xs = {!!}
@@ -315,7 +320,7 @@ id-<?= xs = {!!}
 -- To collect the bonus, you will need to think carefully about
 -- how to make the composition as *lazy* as possible.
 
---??--1.13--------------------------------------------------------------------
+--??--1.13-(3)----------------------------------------------------------------
 
 _o>>_ : {p n m : Nat} -> p <= n -> n <= m -> p <= m
 th o>> th' = {!!}
@@ -332,7 +337,7 @@ cp-<?= th th' xs = {!!}
 -- Thinning Dominoes
 ------------------------------------------------------------------------------
 
---??--1.14--------------------------------------------------------------------
+--??--1.14-(3)----------------------------------------------------------------
 
 idThen-o>> : {n m : Nat}(th : n <= m) -> (oi o>> th) == th
 idThen-o>> th = {!!}
@@ -361,7 +366,7 @@ vProject xs i = vHead (i <?= xs)
 -- Your (TRICKY) mission is to reverse the process, tabulating a function
 -- from indices as a vector. Then show that these operations are inverses.
 
---??--1.15--------------------------------------------------------------------
+--??--1.15-(3)----------------------------------------------------------------
 
 -- HINT: composition of functions
 vTabulate : {n : Nat}{X : Set} -> (1 <= n -> X) -> Vec X n

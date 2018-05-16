@@ -3,7 +3,7 @@
 
 ------------------------------------------------------------------------------
 ------------------------------------------------------------------------------
--- CS410 2017/18 Exercise 2  CATEGORIES AND MONADS (worth 25%)
+-- CS410 2017/18 Exercise 2  CATEGORIES AND MONADS (worth 50%)
 ------------------------------------------------------------------------------
 ------------------------------------------------------------------------------
 
@@ -11,6 +11,11 @@
 -- GitHub.
 
 -- NOTE (29/10/17)  All components are now present.
+
+-- REFLECTION: When I started setting this exercise, I intended it as a
+-- normal size 25% exercise, but it grew and grew, as did the struggles of
+-- the students. I accepted that I had basically set two exercises in one
+-- file and revalued it as such.
 
 
 ------------------------------------------------------------------------------
@@ -30,7 +35,7 @@ open import Ex1
 -- is assemble the collection of things you did into Ex1 into neat categorical
 -- packaging.
 
---??--2.1---------------------------------------------------------------------
+--??--2.1-(4)-----------------------------------------------------------------
 
 OPE : Category            -- The category of order-preserving embeddings...
 OPE = record
@@ -97,7 +102,7 @@ infixr 4 _+L_
 -- But I will ask you to find some structure for it.
 
 
---??--2.2---------------------------------------------------------------------
+--??--2.2-(3)-----------------------------------------------------------------
 
 LIST-MONOID : Set -> Category
 LIST-MONOID X =            -- Show that _+L_ is the operation of a monoid,...
@@ -118,7 +123,7 @@ LIST-MONOID X =            -- Show that _+L_ is the operation of a monoid,...
 -- apply that function to all the elements of a list. (Haskell calls this
 -- operation "map".)
 
---??--2.3---------------------------------------------------------------------
+--??--2.3-(3)-----------------------------------------------------------------
 
 list : {X Y : Set} -> (X -> Y) -> List X -> List Y
 list f xs = {!!}
@@ -137,7 +142,7 @@ LIST = record
 
 -- Moreover, applying a function elementwise should respect appending.
 
---??--2.4---------------------------------------------------------------------
+--??--2.4-(3)-----------------------------------------------------------------
 
 LIST+L : {X Y : Set}(f : X -> Y) -> LIST-MONOID X => LIST-MONOID Y
 LIST+L {X}{Y} f = record
@@ -154,7 +159,7 @@ LIST+L {X}{Y} f = record
 
 -- Next, we have two very important "natural transformations".
 
---??--2.5---------------------------------------------------------------------
+--??--2.5-(1)-----------------------------------------------------------------
 
 SINGLE : ID ~~> LIST
 SINGLE = record
@@ -174,7 +179,7 @@ SINGLE = record
 -- transform the elements (two layers inside) then concatenate, or you
 -- concatenate, then transform the elements.
 
---??--2.6---------------------------------------------------------------------
+--??--2.6-(3)-----------------------------------------------------------------
 
 concat : {X : Set} -> List (List X) -> List X
 concat xss = {!!}
@@ -192,7 +197,7 @@ CONCAT = record
 -- You've nearly built your first monad! You just need to prove that
 -- single and concat play nicely with each other.
 
---??--2.7---------------------------------------------------------------------
+--??--2.7-(4)-----------------------------------------------------------------
 
 module LIST-MONAD where
   open MONAD LIST public
@@ -289,7 +294,7 @@ VecCopy X n = All (\ _ -> X) (copy n)
 
 -- Now, your turn...
 
---??--2.8---------------------------------------------------------------------
+--??--2.8-(4)-----------------------------------------------------------------
 
 -- Show that, for any X, All induces a functor
 -- from (X ->SET) to (List X ->SET)
@@ -308,6 +313,10 @@ ALL X = record
   -- useful helper facts go here
 
 --??--------------------------------------------------------------------------
+
+
+-- ABOVE THIS LINE, 25%
+-- BELOW THIS LINE, 25%
 
 
 ------------------------------------------------------------------------------
@@ -385,7 +394,7 @@ footprints = (4 , 6 , refl 10) 8>< strVec "foot"
 -- Now, let me direct you to the =$ operator, now in CS410-Prelude.agda,
 -- which you may find helps with the proofs in the following.
 
---??--2.9---------------------------------------------------------------------
+--??--2.9-(3)-----------------------------------------------------------------
 
 -- Using what you already built for ALL, show that every Cutting C gives us
 -- a functor between categories of indexed sets.
@@ -495,7 +504,7 @@ module INTERIOR {I : Set}{C : I |> I} where  -- fix some C...
 
     -- But if you've built "all" correctly, you should be able to prove this:
 
---??--2.10--------------------------------------------------------------------
+--??--2.10-(2)----------------------------------------------------------------
 
     allInteriorFoldLaw : (pq : [ P -:> Q ])(qalg : Algebra (CUTTING C) Q) ->
       allInteriorFold pq qalg == all (interiorFold pq qalg)
@@ -510,7 +519,7 @@ module INTERIOR {I : Set}{C : I |> I} where  -- fix some C...
     -- Its purpose is to bottle the inductive proof method for functions
     -- built with interiorFold.
 
---??--2.11--------------------------------------------------------------------
+--??--2.11-(3)----------------------------------------------------------------
 
     interiorFoldLemma :
       (pq : [ P -:> Q ])(qalg : Algebra (CUTTING C) Q)
@@ -585,7 +594,7 @@ module INTERIOR {I : Set}{C : I |> I} where  -- fix some C...
 
   -- We need Interior C to be a functor.
 
---??--2.12--------------------------------------------------------------------
+--??--2.12-(5)----------------------------------------------------------------
 
   -- using interiorBind, implement the "F-map" for Interiors as a one-liner
 
@@ -623,7 +632,7 @@ module INTERIOR {I : Set}{C : I |> I} where  -- fix some C...
 
   open MONAD INTERIOR
 
---??--2.13--------------------------------------------------------------------
+--??--2.13-(5)----------------------------------------------------------------
 
   WRAP : ID ~~> INTERIOR
   WRAP = record
@@ -656,7 +665,7 @@ open INTERIORFOLD
 
 -- You should be able to define an algebra on vectors for NatCut, using +V
 
---??--2.14--------------------------------------------------------------------
+--??--2.14-(2)----------------------------------------------------------------
 
 NatCutVecAlg : {X : Set} -> Algebra (CUTTING NatCut) (Vec X)
 NatCutVecAlg n xsc = {!!}
@@ -676,7 +685,7 @@ test1 = interiorFold (\ _ -> id) NatCutVecAlg 13 subbookkeeper
 module CHOICE where
   open _|>_
 
---??--2.15--------------------------------------------------------------------
+--??--2.15-(2)----------------------------------------------------------------
 
   -- Show that if you can cut up I and cut up J, then you can cut up I * J.
   -- You now have two dimensions (I and J). The idea is that you choose one
@@ -727,7 +736,7 @@ rectangle = < inr (4 , 2 , refl _)
 
 -- But for now, one last thing.
 
---??--2.16--------------------------------------------------------------------
+--??--2.16-(4)----------------------------------------------------------------
 
 -- Show that if you have a vector of n Ps for every element of a list,
 -- then you can make a vector of n (All P)s .
