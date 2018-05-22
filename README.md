@@ -38,6 +38,9 @@ $ echo $0
 16. [Friday 10 November](https://www.youtube.com/watch?v=AjyUNakYHRs) Polynomial Data and Codata
 17. [Tuesday 14 November](https://www.youtube.com/watch?v=E8xIJolKEAI) A Polynomial Universe
 18. [Friday 17 November](https://www.youtube.com/watch?v=-3MiZ80WldY) The Zipper (Differentiating Polynomial Types)
+19. [Tuesday 21 November](https://www.youtube.com/watch?v=lzmLTOxxni8) Polynomials are Containers and their Fixpoints are Functors
+20. [Friday 24 November](https://www.youtube.com/watch?v=--GlUmaM5e4) A Typed Language and its Interpreter
+21. [Tuesday 28 November](https://www.youtube.com/watch?v=ahwCXcYHkXQ) Thinning and Substitution for our Typed Language
 
 ## Other useful stuff
 
